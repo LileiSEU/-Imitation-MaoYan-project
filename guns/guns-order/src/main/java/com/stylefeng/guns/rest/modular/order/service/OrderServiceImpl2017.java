@@ -13,6 +13,7 @@ import com.stylefeng.guns.api.order.vo.OrderVO;
 import com.stylefeng.guns.core.util.UUIDUtil;
 import com.stylefeng.guns.rest.common.persistence.dao.MoocOrder2017TMapper;
 import com.stylefeng.guns.rest.common.persistence.model.MoocOrder2017T;
+import com.stylefeng.guns.rest.common.persistence.model.MoocOrderT;
 import com.stylefeng.guns.rest.common.util.FTPUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,4 +200,40 @@ public class OrderServiceImpl2017 implements OrderServiceAPI {
             return soldSeatsByFieldId;
         }
     }
+
+    @Override
+    public OrderVO getOrderInfoById(String orderId) {
+        OrderVO orderInfoById = moocOrder2017TMapper.getOrderInfoById(orderId);
+        return orderInfoById;
+    }
+
+    @Override
+    public boolean paySuccess(String orderId) {
+        MoocOrder2017T moocOrderT = new MoocOrder2017T();
+        moocOrderT.setUuid(orderId);
+        moocOrderT.setOrderStatus(1); // 1 - 支付成功； 2 - 支付失败； 0 - 正在支付
+
+        Integer integer = moocOrder2017TMapper.updateById(moocOrderT);
+        if(integer >= 1){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean payFail(String orderId) {
+        MoocOrder2017T moocOrderT = new MoocOrder2017T();
+        moocOrderT.setUuid(orderId);
+        moocOrderT.setOrderStatus(2); // 1 - 支付成功； 2 - 支付失败； 0 - 正在支付
+
+        Integer integer = moocOrder2017TMapper.updateById(moocOrderT);
+        if(integer >= 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }

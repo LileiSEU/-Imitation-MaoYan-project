@@ -2,6 +2,7 @@ package com.stylefeng.guns.rest.modular.order.service;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -12,6 +13,7 @@ import com.stylefeng.guns.api.order.OrderServiceAPI;
 import com.stylefeng.guns.api.order.vo.OrderVO;
 import com.stylefeng.guns.core.util.UUIDUtil;
 import com.stylefeng.guns.rest.common.persistence.dao.MoocOrder2018TMapper;
+import com.stylefeng.guns.rest.common.persistence.model.MoocOrder2017T;
 import com.stylefeng.guns.rest.common.persistence.model.MoocOrder2018T;
 import com.stylefeng.guns.rest.common.util.FTPUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -199,4 +201,44 @@ public class OrderServiceImpl2018 implements OrderServiceAPI {
             return soldSeatsByFieldId;
         }
     }
+
+    @Override
+    public OrderVO getOrderInfoById(String orderId) {
+        OrderVO orderInfoById = moocOrder2018TMapper.getOrderInfoById(orderId);
+        return orderInfoById;
+    }
+
+    @Override
+    public boolean paySuccess(String orderId) {
+
+        String userId = RpcContext.getContext().getAttachment("userId");
+        System.out.println("userId: " + userId );
+
+        MoocOrder2018T moocOrderT = new MoocOrder2018T();
+        moocOrderT.setUuid(orderId);
+        moocOrderT.setOrderStatus(1); // 1 - 支付成功； 2 - 支付失败； 0 - 正在支付
+
+        Integer integer = moocOrder2018TMapper.updateById(moocOrderT);
+        if(integer >= 1){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean payFail(String orderId) {
+        MoocOrder2018T moocOrderT = new MoocOrder2018T();
+        moocOrderT.setUuid(orderId);
+        moocOrderT.setOrderStatus(2); // 1 - 支付成功； 2 - 支付失败； 0 - 正在支付
+
+        Integer integer = moocOrder2018TMapper.updateById(moocOrderT);
+        if(integer >= 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }

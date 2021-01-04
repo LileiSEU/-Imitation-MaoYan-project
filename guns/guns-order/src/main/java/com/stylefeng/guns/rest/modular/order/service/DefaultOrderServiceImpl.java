@@ -201,5 +201,39 @@ public class DefaultOrderServiceImpl implements OrderServiceAPI {
         }
     }
 
+    @Override
+    public OrderVO getOrderInfoById(String orderId) {
+        OrderVO orderInfoById = moocOrderTMapper.getOrderInfoById(orderId);
+        return orderInfoById;
+    }
+
+    @Override
+    public boolean paySuccess(String orderId) {
+        MoocOrderT moocOrderT = new MoocOrderT();
+        moocOrderT.setUuid(orderId);
+        moocOrderT.setOrderStatus(1); // 1 - 支付成功； 2 - 支付失败； 0 - 正在支付
+
+        Integer integer = moocOrderTMapper.updateById(moocOrderT);
+        if(integer >= 1){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean payFail(String orderId) {
+        MoocOrderT moocOrderT = new MoocOrderT();
+        moocOrderT.setUuid(orderId);
+        moocOrderT.setOrderStatus(2); // 1 - 支付成功； 2 - 支付失败； 0 - 正在支付
+
+        Integer integer = moocOrderTMapper.updateById(moocOrderT);
+        if(integer >= 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 }
